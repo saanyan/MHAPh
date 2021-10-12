@@ -1,4 +1,4 @@
-# Saan yan?
+# #MaringPH Rescue and Response Map
 ## Saan may community pantries? [Visit the map here.](http://bit.ly/communitypantrymap)
 - Feel free to fork this repo, with proper attrubutions. Thank you!
 
