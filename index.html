@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<!--Initially based on https://github.com/radumas/crowdmap-basic and https://github.com/mjfoster83/web-map-workshop/blob/master/7_advancedMapping_CartoDB/index-completed.html-->
+<html>
+<head>
+	<meta charset="utf-8" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+	<meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<title>Saan may Community Pantry?</title>
+	<link rel="icon" href="assets/sklph.png">
+	
+	<!-- CSS -->
+	<link href="https://unpkg.com/leaflet@0.7.7/dist/leaflet.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" rel="stylesheet">
+	<link href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+	<link href="css/style.css" rel="stylesheet" type="text/css">
+	<link href="js/Leaflet.markercluster-leaflet-0.7/dist/MarkerCluster.css" rel="stylesheet" type="text/css">
+	<link href="js/Leaflet.markercluster-leaflet-0.7/dist/MarkerCluster.Default.css" rel="stylesheet" type="text/css">
+	<link href="https://rawgit.com/k4r573n/leaflet-control-osm-geocoder/master/Control.OSMGeocoder.css" rel="stylesheet">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css" rel="stylesheet">
+	<link href="https://rawgit.com/mapshakers/leaflet-control-window/master/src/L.Control.Window.css" rel="stylesheet">
+	<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+	
+	<!-- Frameworks -->
+	<script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script> 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> 
+	<script src="https://rawgit.com/k4r573n/leaflet-control-osm-geocoder/master/Control.OSMGeocoder.js"></script> 
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> 
+	<script src="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script> 
+	<script charset="utf-8" src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.js"></script> 
+	<script src="https://rawgit.com/mapshakers/leaflet-control-window/master/src/L.Control.Window.js"></script> 
+	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script> 	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script src='./js/Leaflet.markercluster-leaflet-0.7/dist/leaflet.markercluster.js'></script>
+	<script src='./Leaflet.LocationShare.js'></script>
+	
+	<!-- JS -->
+	<script src='./js/config.js'></script>
+<!--	<script src='https://github.com/anditabinas/evacuationcenters/blob/master/leaflet-routing-machine.js'></script> -->	
+
+</head>
+<body>
+	<body oncontextmenu="return false">
+	<div class="col-lg-12">
+		<div class="row">
+			<div id="wrapper">
+			</div>
+			<div class="col-sm-12 col-xs-12 d-sm-block d-md-none d-lg-none d-xl-none">
+				<input id="ditomaypantry" class="btn btn-info" onclick="startEdits()" type="button" value="Dito may community pantry."> <input id="salamatnalangsalahat" class="btn btn-light" onclick="stopEdits()" type="button" value="Salamat!">
+			</div>
+			<div class="col-lg-7 col-sm-12">
+				<div id="map"><a href="http://mapbox.com/about/maps" class='mapbox-logo' target="_blank">Mapbox</a>
+					<div class="mapbox-attribution-container">
+						<a href="https://www.mapbox.com/about/maps/">© Mapbox | </a>
+						<a href="http://www.openstreetmap.org/copyright">© OpenStreetMap | </a>
+						<a href="https://www.mapbox.com/map-feedback/" target="_blank"><strong>Improve this map</strong></a>
+					</div>
+				</div>
+			</div>
+		<div class="col-lg-5 col-sm-12 d-none d-md-block" id="sklmp">
+			<div class="skl-logo">
+			</div>
+				<div class="row">
+					<h1>Saan may COMMUNITY PANTRY? </h1>
+				</div>
+				<div class="row" id="sunbaenim">
+					<span id="marx">"Magbigay ayon sa kakayanan. <br> Kumuha batay sa pangangailangan."</span>
+				</div>
+			<ul class="nav nav-tabs" id="myTab" role="tablist">
+  				<li class="nav-item">
+    				<a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Instructions</a>
+  				</li>
+  				<li class="nav-item">
+    				<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Statistics</a>
+  				</li>
+  				<li class="nav-item">
+    				<a class="nav-link" id="about-tab" data-toggle="tab" href="#about" role="tab" aria-controls="about" aria-selected="false">About</a>
+  				</li>
+			</ul>
+			<div class="tab-content" id="myTabContent">
+  				<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+					<div class="row">
+						<span class="header-marxsunbaenim">Pins = Community Pantries! ♥️</span>
+					</div>
+					<div class="row">
+						<span class="header-marxsunbaenim-cont">Mula sa pagiging "Saan May Nagdedeliver", 
+						ipinalit dito ang "Saan may Community Pantry?" Kung may alam kang community pantries, 
+						maaring pakidagdag dito upang malaman din ng iba kung saan mayroong malapit na community mutual aid.
+						</span>
+					</div>
+					 <div class="row mt-3">
+					 	<span class="header-marxsunbaenim">
+					 	Paano Gamitin Ang Mapa?
+					 	</span>
+					 </div>
+					 <div class="row">
+					 	<span class="header-marxsunbaenim-cont">
+					 	 1️⃣ Hanapin lamang ang location ng community pantry; (mag-Zoom in sa mapa, o gamitin ang search tool sa kaliwa), o kung nasa mismong lokasyon ka, i-click mo lang ang kamay na naka-turo pababa na nasa bandang kaliwa ng mapa. 
+		 				</span>
+					 </div>
+					 <div class="row">
+					 	<span class="header-marxsunbaenim-cont">
+					 	2️⃣ Kapag handa nang magdagdag ng impormasyon, i-click lang ang "Dito mayroong community pantry." 
+					 	</span>
+					 </div>
+					 <div class="row">
+					 	<span class="header-marxsunbaenim-cont">
+					  	3️⃣ I-drag ang lalabas na pin sa upper-right na bahagi ng mapa papunta sa naka-zoom in na lokasyon.
+					 	</span>
+					 </div>
+					 <div class="row">
+					 	<span class="header-marxsunbaenim-cont">
+					 	4️⃣ Kapag nakatapat na ang pin sa mismong lokasyon ng Community Pantry, ilagay ang detalye sa lilitaw na form.
+					 	</span>
+					 </div>
+					 <div class="row">
+						<span class="header-marxsunbaenim-cont">
+						  🔘Maaari ring isubmit <a href="https://forms.gle/MiArXYsaTunhh3AK8">dito</a> 
+						 ang impormasyon ng community pantry, at kami na ang magdadagdag sa mapa. Salamat!
+					 	</span>
+					 </div>
+					 	<input id="ditomaypantry" class="btn btn-info" onclick="startEdits()" type="button" value="Dito may community pantry."> <input id="salamatnalangsalahat" class="btn btn-light" onclick="stopEdits()" type="button" value="Salamat!">
+				</div>
+  				<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+  					<span id="totalPantries" class="header-marxsunbaenim">
+  					</span>
+  					<br>
+  					<span class="header-marxsunbaenim-cont">
+  					Additional data and insights can be found <a href="http://bit.ly/cpmapdashboard">here.</a>
+  					</span>
+  				</div>
+  				<div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
+					<span class="header-marxsunbaenim-cont">
+					Community Pantries shown here in this map are inspired by. Ms. Ana Patricia Non’s Maginhawa Community Pantry.<br><br> A Project by Ministry of Mapping, Mental Health AWHEREness PH, MapBeks, UP Department of Geography, Geographic Society of the University of the Philippines, and the PH Open-mapping Community; and in partnership with Rappler's #MovePH. Please follow our Facebook Page <a href="https://www.facebook.com/saanyanph">here.</a>
+					</span>
+					<div class="row">
+					<div id="logo_MOM" onclick="window.open('https://www.facebook.com/mappingministry', '_blank');">
+					</div>
+					<div id="logo_MHAW" onclick="window.open('https://www.facebook.com/mentalhealthaWHEREness', '_blank');">
+					</div>
+					<div id="logo_MPBEKS" onclick="window.open('https://www.facebook.com/mapbeks', '_blank');">
+					</div>
+					<div id="logo_DEPT" onclick="window.open('https://www.facebook.com/UPDGeography', '_blank');">
+					</div>
+					<div id="logo_UPGEOGSOC" onclick="window.open('https://www.facebook.com/geographicsociety.up', '_blank');">
+					</div>
+					</div>
+					<div class="row">
+						<span class="header-marxsunbaenim-cont">
+						Saan Yan PH Volunteers:
+						<br>
+						Andi, Mikko, David, Ony, Carlo, JR, Kimberly, Joseph, Christie, Raymund, Reynier, Ozzy, Roel, Ian, Allen, Bea, Cheska, James, & Alfie.
+						</span>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+			<div id="credits">
+			<p>A Project by Ministry of Mapping, Mental Health AWHEREness PH, MapBeks, UP Geography Department, Geographic Society of the University of the Philippines and the PH Open-mapping Community; and in partnership with Rappler's #MovePH. Please follow our Facebook Page <a href="https://www.facebook.com/saanyanph">here.</a></p>
+		</div>
+	<div id="dialog" title="Dito may community pantry:">
+		<form>
+			<fieldset style="border: none;">
+				<ul style="list-style-type: none; padding-left: 0px">
+					<li><label for="fname">Pangalan ng Community Pantry (Eg. MAGINHAWA COMMUNITY PANTRY)</label></li>
+					<li><input id="fname" name="fname" placeholder="Pangalan ng Community Pantry" size="40" type="text" required></li>
+					<li><label for="supplies">Mga nasa pantry</label></li>
+					<li><textarea cols="40" id="supplies" name="product" placeholder="Anong maaaring ibigay/kunin?" rows="5"></textarea></li>
+					<li><label for="contact">Contact Person</label></li>
+					<li><input id="contact" name="price" placeholder="Community Pantry Contact Person" size="40" type="text" required></li>
+					<li><label for="number">Contact Number</label></li>
+					<li><input id="number" name="number" placeholder="Contact Number" size="40" type="text" required></li>			
+					<li><label for="street_address">Street Address</label></li>
+					<li><textarea cols="40" id="street_address" name="street_address" placeholder="Gusto po natin makatulong, kaya't maaari lang pong ilagay ang tamang impormasyon" rows="2"></textarea></li>
+					<li><label for="barangay">Barangay</label></li>
+					<li><input id="barangay" name="barangay" placeholder="Barangay" size="40" type="text" required></li>
+					<li><label for="municipality_city">Municipality or City</label></li>
+					<li><input id="municipality_city" name="municipality_city" placeholder="Municipality/City" size="40" type="text" required></li>	
+					<li><label for="province">Province</label></li>
+					<li><input id="province" name="province" placeholder="Province" size="40" type="text" required></li>
+					<li><label for="region">Region</label></li>
+					<li><input id="region" name="region" placeholder="Roman Numerals for numbered regions (e.g. I)" size="40" type="text" required></li>
+					<li><label for="sched">Sched</label></li>
+					<li><input id="sched" name="sched" placeholder="Sched" size="40" type="text" required></li>		
+					<li><label for="more">More information or Note to the community</label></li>
+					<li><textarea cols="40" id="more" name="more" placeholder="Iba pang importanteng impormasyon para sa komunidad" rows="5"></textarea></li>
+				</ul><input style="position:absolute; top:-1000px" tabindex="-1" type="submit">
+			</fieldset>
+		</form>
+	</div>
+	<script>
+	          var cartoData = null; //These adds data from Carto using the SQL API, declares variables, and writes the SQL selection query
+	          var pantriesData = {};
+	          var sqlQuery = "SELECT the_geom, name, supplies, contact, number, street_address, barangay, municipality_city, province, region, sched, more FROM " + config.cartoTablename;
+	          var map = L.map('map', { center: config.mapcenter, zoom: 6, zoomControl: config.zoomControl });   // Creates the Leaflet map object
+	          var osmGeocoder = new L.Control.OSMGeocoder({position: 'topleft'}); //Adds Search toolbar; OSMGeocoder       
+	          map.addControl(osmGeocoder);
+	          
+	          map.addControl(new L.Control.Fullscreen({
+	        	  position: 'topleft'
+	          }));
+				  
+	          var Mapbox = L.tileLayer('https://api.mapbox.com/styles/v1/anditabinas/ck03r85tj4p951cl5s673xu47/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYW5kaXRhYmluYXMiLCJhIjoiY2plejI3aHp3MDV3MjMzcW9ydXl2bHNmZiJ9.9h6j7BbkM-PUtK0zaZ1iUg', {
+	              attribution: '&copy; <a href="mapbox://styles/anditabinas/ck03r85tj4p951cl5s673xu47">Mapbox<\/a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap<\/a> contributors; <strong><a href="https://www.mapbox.com/map-feedback/">Improve this map</strong></a>',
+	              subdomains: 'abcd',
+	              maxZoom: 20 //Adds the tilelayer basemap; I used my mapbox style here.
+	          }); 
+	          Mapbox.addTo(map);
+	          var lc = L.control.locate({  //Adds Locate Control; to locate the user's location on the map
+	                  position: 'topleft',
+	              icon: 'fa fa-hand-o-down'
+	          });     
+	          map.addControl(lc);
+          	  
+	        var getTotalPantries = "https://" + config.cartoUsername + ".carto.com/api/v2/sql?format=GeoJSON&q=" + sqlQuery; //Fetches data input on the carto database
+
+	        function getGeoJSONTotalPantries(){  $.getJSON(getTotalPantries, function(data) {
+	        	  var clusters = L.markerClusterGroup();
+	        	  cartoData = L.geoJson(data, {
+	        	    pointToLayer: function(feature, latlng) {
+	        	      var marker = L.marker(latlng);
+	        	      marker.bindPopup('<b>Community Pantry: <\/b>' + feature.properties.name + '<br>' + '<b>Laman/Mailalaman sa Pantry: <\/b>' + feature.properties.supplies + '<br>' + '<b>Contact Person: <\/b>' + feature.properties.contact + '<br>' + '<b>Contact Number: <\/b>' + feature.properties.number + '<br>' + '<b>Street Address: <\/b>' + feature.properties.street_address + '<br>' + '<b>Barangay: <\/b>' + feature.properties.barangay + '<br>' + '<b>Municipality/City: <\/b>' + feature.properties.municipality_city + '<br>' + '<b>Province: <\/b>' + feature.properties.province + '<br>' + '<b>Region: <\/b>' + feature.properties.region + '<br>' + '<b>Schedule: <\/b>' + feature.properties.sched + '<br>' + '<b>More information: <\/b>' + feature.properties.more + '');
+	        	      return marker;
+	        	    },
+	        	    onEachFeature: function (feature, layer) {
+	        	      layer.addTo(clusters);
+	        	    }
+	        	  });
+	        	  map.addLayer(clusters);
+	        	  document.getElementById('totalPantries').innerHTML = "Total Community Pantries: " + data.features.length;
+	        	});
+	          }
+
+	          getGeoJSONTotalPantries();
+	          var drawnItems = new L.FeatureGroup();
+	          var drawControl = new L.Control.Draw(config.drawOptions);
+	          var controlOnMap = false;
+	          function startEdits() {
+	              if (controlOnMap === true) {
+	                  map.removeControl(drawControl);
+	                  controlOnMap = false;
+	              }
+	              map.addControl(drawControl);
+	              controlOnMap = true;
+	          }
+	          function clusterPoints(){
+	        	  var markers = L.markerClusterGroup();
+	  	          for (var i = 0; i < pantriesData.features.length; i++) {
+	  	  				var a = pantriesData.features[i].geometry.coordinates;
+	  	  				var title = a[0];
+	  	  				var marker = L.marker(new L.LatLng(a[0], a[1]), { title: title });
+	  	  				marker.bindPopup(title);
+	  	  				markers.addLayer(marker);
+	  	  		  } 
+	  	          map.addLayer(markers);
+	          }
+	          function stopEdits() {
+	              map.removeControl(drawControl);
+	              controlOnMap = false;
+	          }
+	          map.on(L.Draw.Event.CREATED, function (e) {
+	              var layer = e.layer;
+	              map.addLayer(drawnItems);
+	              drawnItems.addLayer(layer);		  
+	              dialog.dialog("open");	      		  			  
+	          }); 					
+		
+	          var dialog = $("#dialog").dialog({
+	              autoOpen: false,
+	              height: 640,
+	              width: 345,
+	              modal: true,
+	              position: {
+	                  my: "center center",
+	                  at: "center center",
+	                  of: "#map"
+	              },
+	              buttons: {
+	                  "Ilagay sa mapa.": setData,
+	                  Cancel: function () {
+	                      dialog.dialog("close");
+	                      refreshLayer();             
+	                  }
+	              },
+	              close: function () {
+	                  form[0].reset();
+	                  refreshLayer();
+	                  console.log("Dialog closed");
+	              }
+	          });
+	          
+	          form = dialog.find("form").on("submit", function (event) {
+	              event.preventDefault();
+	              setData();
+	          });
+	          function setData() {
+	              var enteredFname = "'" + JSON.stringify(fname.value.replace("'", "''")) + "'"
+	              var enteredSupplies = "'" + JSON.stringify(supplies.value.replace("'", "''")) + "'"	
+	              var enteredContact = "'" + JSON.stringify(contact.value.replace("'", "''")) + "'"			      
+	              var enteredNumber = "'" + JSON.stringify(number.value.replace("'", "''")) + "'"	
+	              var enteredStreet_address = "'" + JSON.stringify(street_address.value.replace("'", "''")) + "'"	
+	              var enteredBarangay = "'" + JSON.stringify(barangay.value.replace("'", "''")) + "'"	
+	              var enteredMunicipality_city = "'" + JSON.stringify(municipality_city.value.replace("'", "''")) + "'"	
+	              var enteredProvince = "'" + JSON.stringify(province.value.replace("'", "''")) + "'"
+	              var enteredRegion = "'" + JSON.stringify(region.value.replace("'", "''")) + "'"			      
+	              var enteredSched = "'" + JSON.stringify(sched.value.replace("'", "''")) + "'"			  
+	              var enteredMore = "'" + JSON.stringify(more.value.replace("'", "''")) + "'";
+				  
+			  
+	              drawnItems.eachLayer(function (layer) {
+	                  var drawing = "'" + JSON.stringify(layer.toGeoJSON().geometry) + "'",   //Converts the drawing to a GeoJSON
+	                      sql = "SELECT " + config.cartoInsertFunction + "("; //Constructs the SQL Query from the entered parameters on the dialog/form
+	                  sql += drawing;
+	                  sql += "," + enteredFname;
+	                  sql += "," + enteredSupplies;
+	                  sql += "," + enteredContact;
+	                  sql += "," + enteredNumber;			      
+	                  sql += "," + enteredStreet_address;
+	                  sql += "," + enteredBarangay;			      
+	                  sql += "," + enteredMunicipality_city;
+	                  sql += "," + enteredProvince;			      
+	                  sql += "," + enteredRegion;			      
+	                  sql += "," + enteredSched;
+	                  sql += "," + enteredMore;            
+	                  sql += ");";
+	                  console.log(drawing);
+	                  
+	                  $.ajax({
+	                      type: 'POST',
+	                      url: 'https://' + config.cartoUsername + '.carto.com/api/v2/sql', //Sending the data to Carto
+	                      crossDomain: true,
+	                      data: {"q": sql},
+	                      dataType: 'json',
+	                      success: function (responseData, textStatus, jqXHR) {
+	                          console.log("Data saved");
+	                      },
+	                      error: function (responseData, textStatus, errorThrown) {
+	                          console.log("Problem saving the data");
+	                      }
+	                  });
+	                  var newData = layer.toGeoJSON();
+	                    newData.properties.name = fname.value;
+	                    newData.properties.product = supplies.value;
+	                    newData.properties.price = contact.value;
+	                    newData.properties.contact = number.value;			      
+	                    newData.properties.address = street_address.value;
+	                    newData.properties.product = barangay.value;
+	                    newData.properties.product = municipality_city.value;
+	                    newData.properties.product = province.value;
+	                    newData.properties.product = region.value;		      
+	                    newData.properties.sched = sched.value;
+	                    newData.properties.more = more.value;             
+	                  cartoData.addData(newData);             
+	              });
+	              
+	              dialog.dialog("close");
+	          }
+	          function refreshLayer() {
+	              console.log("drawnItems has been cleared");
+	              map.removeLayer(drawnItems);
+	              drawnItems = new L.FeatureGroup();
+	          }
+
+	          document.getElementById('logo_MHAW').style.cursor='hand';
+	          document.getElementById('logo_MPBEKS').style.cursor='hand'; 
+	          document.getElementById('logo_MOM').style.cursor='hand'; 
+	          document.getElementById('logo_UPGEOGSOC').style.cursor='hand'; 
+	          document.getElementById('logo_DEPT').style.cursor='hand'; 
+	</script>
+</body>
+</html>
