@@ -1,7 +1,7 @@
     var config = { //TODO: Change to your username, insert function on Carto, and Carto tablename
             cartoUsername: "anditabinas",
             cartoInsertFunction : "insert_crowd_mapping_data",
-            cartoTablename: "mhaph2021",
+            cartoTablename: "mhaph2021x",
             mapcenter: [13.325,121.300],
             drawOptions: {
                 draw: {
