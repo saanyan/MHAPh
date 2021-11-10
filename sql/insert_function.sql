@@ -29,7 +29,7 @@ BEGIN
 
 	--Executes the insert given the supplied geometry, description, and username, while protecting against SQL injection.
     EXECUTE ' INSERT INTO '||quote_ident(_the_table)||' (the_geom, name, address, number, email, socmed, freepaid, initial, succeeding, insti, accessibility, opening, more)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             ' USING _the_geom, _name, _address, _number, _email, _socmed, _freepaid, _initial, _succeeding, _insti, _accessibility, _opening, _more;
             
     RETURN 1;
